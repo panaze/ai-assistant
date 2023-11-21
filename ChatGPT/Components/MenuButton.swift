@@ -64,5 +64,5 @@ struct MenuButton: View {
 }
 
 #Preview {
-    ContentView()
+    ContentView().environmentObject(OpenAIConnector())
 }

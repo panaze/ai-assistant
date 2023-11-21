@@ -9,23 +9,31 @@ import SwiftUI
 
 struct SearchBar: View {
     @Binding var text: String
+    @FocusState private var isFocused: Bool
 
     var body: some View {
-        HStack {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(Color("SearchBarInsideColor"))
+        VStack {
+            HStack {
+                Image(systemName: "magnifyingglass")
+                    .foregroundColor(Color("SearchBarInsideColor"))
 
-            TextField("", text: $text)
-                .modifier(PlaceholderModifier(
-                    showPlaceholder: text.isEmpty,
-                    placeholder: "Search",
-                    placeholderColor: Color("SearchBarInsideColor")
-                ))
+                TextField("", text: $text)
+                    .disabled(true)
+                    .focused($isFocused)
+                    .modifier(PlaceholderModifier(
+                        showPlaceholder: text.isEmpty,
+                        placeholder: "Search",
+                        placeholderColor: Color("SearchBarInsideColor")
+                    ))
+            }
+            .padding(8)
+            .background(Color("SearchBarColor"))
+            .cornerRadius(10)
+            .frame(maxWidth: .infinity)
         }
-        .padding(8)
-        .background(Color("SearchBarColor"))
-        .cornerRadius(10)
-        .frame(maxWidth: .infinity) 
+        .onTapGesture {
+            isFocused = false
+        }
     }
 }
 

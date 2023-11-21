@@ -27,6 +27,7 @@ struct DrawerFooter: View {
             
             Image(systemName: "ellipsis").foregroundColor(.white)
         }
+        .padding(.vertical)
        
     }
 }

@@ -2,17 +2,19 @@
 //  ContentView.swift
 //  ChatGPT
 //
-//  Created by Manuchim Oliver on 15/03/2023.
+//  Created by Pablo Navarro on 21/11/2023.
 //
 
 import SwiftUI
 import Combine
 
 struct ContentView: View {
-    @State var chatMessages: [ChatMessage] = []
+    //@State var chatMessages: [ChatMessage] = []
     @State var message: String = ""
     @State var lastMessageID: String = ""
     @State var cancellables = Set<AnyCancellable>()
+    
+    @EnvironmentObject var connector: OpenAIConnector
     
     @StateObject var menuData = MenuViewModel()
     
@@ -20,10 +22,6 @@ struct ContentView: View {
     
     @Environment(\.colorScheme) var colorScheme
     
-    
-    let openAIService = OpenAIService()
-    var isLoading: Bool = OpenAIService().isLoading
-
     init(){
         UITabBar.appearance().isHidden = true
     }
@@ -32,19 +30,23 @@ struct ContentView: View {
         
         HStack(spacing: 0){
             
-            //Drawer
+            // Drawer with Accessibility
             Drawer(animation: animation)
-            
+                .accessibilityLabel("Navigation Menu")
             
             VStack {
                 
+                // Header with Accessibility
                 Header(menuData: menuData)
+                    .accessibilityLabel("Chat Header")
                 
                 ScrollViewReader { proxy in
                     ScrollView(.vertical, showsIndicators: false) {
-                        LazyVStack(alignment: .leading) {
-                            ForEach(chatMessages, id: \.id) { message in
+                        VStack(alignment: .leading) {
+                            ForEach(connector.messageLog.filter { $0["role"] != "system" }, id: \.id) { message in
+                                // Message View with Accessibility
                                 MessageView(message: message)
+                                    .accessibilityLabel("Message from \(message["role"] ?? "error"): \(message["content"] ?? "error")")
                             }
                         }
                     }
@@ -55,7 +57,10 @@ struct ContentView: View {
                     }
                 }
                 
-                MessageInput(message: $message, sendMessage: sendMessage)
+                // Message Input with Accessibility
+                MessageInput(message: $message, connector: _connector)
+                    .accessibilityLabel("Message Input")
+                    .accessibilityHint("Double-tap to type your message")
                 
             }
             .padding()
@@ -64,61 +69,54 @@ struct ContentView: View {
             
             
         }
-        //Max Frame..
+        // Max Frame with Accessibility
         .frame(width: UIScreen.main.bounds.width)
-        //Moving View...
-        // 250/2" -> 125
         .offset(x: menuData.showDrawer ? 155 : -155)
-       
-        //Setting As Environment Object
-        //For Avoiding Re-Declaration
         .environmentObject(menuData)
+        .preferredColorScheme(menuData.showDrawer ? .light : .dark)
+        .accessibility(hidden: menuData.showDrawer)
+        .gesture(
+            DragGesture()
+            .onEnded(onDragEnded)
+        )
+        
         
     }
-        
-    func sendMessage (){
-        guard message != "" else {return}
-        
-       
-        let myMessage = ChatMessage(id: UUID().uuidString, content: message, createdAt: Date(), sender: .me)
-        chatMessages.append(myMessage)
-        lastMessageID = myMessage.id
+    
+    private func onDragEnded(drag: DragGesture.Value) {
+        let hapticFeedback = UINotificationFeedbackGenerator()
+        let dragDistance = drag.translation.width
         
         
-        //Comment or unncomment for testing
-
-        let textResponse = "The Roman Empire was incredibly vast, but one fun fact is about their innovative use of concrete. They were among the first to use concrete extensively in construction, which allowed them to build structures like the Pantheon and the Colosseum that have stood for thousands of years. This early concrete was made from a mix of lime, volcanic sand, and ash, making it very durable and resistant to weathering."
         
-        let chatGPTMessage = ChatMessage(id: UUID().uuidString, content: textResponse, createdAt: Date(), sender: .chatGPT)
+        hapticFeedback.notificationOccurred(.success)
         
-        chatMessages.append(chatGPTMessage)
-        lastMessageID = chatGPTMessage.id
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         
-        //When UI is ready uncomment this line
-        
-        /*
-        openAIService.sendMessage(message: message).sink { completion in
-            /// - Handle Error here
-        } receiveValue: { response in
-            guard let textResponse = response.choices.first?.text.trimmingCharacters(in: .whitespacesAndNewlines.union(.init(charactersIn: "\""))) else {return}
-            let chatGPTMessage = ChatMessage(id: response.id, content: textResponse, createdAt: Date(), sender: .chatGPT)
-            
-            chatMessages.append(chatGPTMessage)
-            lastMessageID = chatGPTMessage.id
+        if dragDistance > 100 { // Threshold to open drawer
+            // Open the drawer if it's not already open
+            if !menuData.showDrawer {
+                withAnimation {
+                    menuData.showDrawer = true
+                }
+            }
+        } else if dragDistance < -100 { // Threshold to close drawer
+            // Close the drawer if it's open
+            if menuData.showDrawer {
+                withAnimation {
+                    menuData.showDrawer = false
+                }
+            }
         }
-        .store(in: &cancellables)
-            
-        */
-         
-        message = ""
     }
+    
+    
+        
 }
-
-
-
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView().environmentObject(OpenAIConnector())
     }
 }
+

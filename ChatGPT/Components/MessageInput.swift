@@ -11,7 +11,7 @@ struct CustomTextField: View {
     @Binding var text: String
     var placeholder: Text
     var cornerRadius: CGFloat
-
+    
     var body: some View {
         ZStack(alignment: .leading) {
             if text.isEmpty {
@@ -35,11 +35,16 @@ struct CustomTextField: View {
 
 struct MessageInput: View {
     @Binding var message: String
-    var sendMessage: () -> Void
+    @EnvironmentObject var connector: OpenAIConnector
+    
+    @State var isWaitingForResponse: Bool = false
 
     var body: some View {
         HStack {
-            Button(action: sendMessage) {
+            Button(action: {
+                print("Button clicked")
+            }
+            ){
                 ZStack {
                     Image(systemName: "circle.fill")
                         .foregroundColor(Color("ColorGrey")) // Color of the circle
@@ -53,12 +58,30 @@ struct MessageInput: View {
             }
             CustomTextField(text: $message, placeholder: Text("Message"), cornerRadius: 30)
             
-            Button(action: sendMessage) {
-                Image(systemName: "arrow.up.circle.fill")
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 5)
-                    .font(.largeTitle)
-                    .fontWeight(.semibold)
+            Button(action: {
+                isWaitingForResponse = true
+                Task {
+                    await connector.sendToAssistant()
+                    isWaitingForResponse = false
+                }
+                connector.logMessage(message, messageUserType: .user)
+                message = ""
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            }
+            ) {
+                if isWaitingForResponse {
+                    Image(systemName: "square.circle")
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 5)
+                        .font(.system(size: 30))
+                        .fontWeight(.semibold)
+                } else {
+                    Image(systemName: "arrow.up.circle.fill")
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 5)
+                        .font(.system(size: 30))
+                        .fontWeight(.semibold)
+                }
             }
         }
     }
@@ -67,6 +90,6 @@ struct MessageInput: View {
 // Assuming you have a ContentView to display the preview
 struct MessageInput_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView().environmentObject(OpenAIConnector())
     }
 }

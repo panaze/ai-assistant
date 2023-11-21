@@ -10,20 +10,25 @@ import SwiftUI
 struct Header: View {
     var menuData = MenuViewModel()
     
+    let hapticFeedback = UINotificationFeedbackGenerator()
+    
     var body: some View {
         HStack (alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/){
             
             Button(action: {
                 withAnimation(.easeInOut){
+                    hapticFeedback.notificationOccurred(.success)
                     menuData.showDrawer.toggle()
+                
                 }
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                 
             }, label : {
                 Image(systemName: "line.3.horizontal.decrease")
                     .foregroundColor(.white)
                     .padding(.horizontal, 5)
-                    .font(.title)
                     .fontWeight(.semibold)
+                    .font(.system(size: 20))
             })
                 Spacer()
                 
@@ -50,12 +55,13 @@ struct Header: View {
                 
                 Image(systemName: "square.and.pencil")
                     .foregroundColor(.white)
-                    .font(.title)
+                    .font(.system(size: 20))
+    
                     .fontWeight(.semibold)
                     
 
             }
-        }
+    }
 }
 
 #Preview {
