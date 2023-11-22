@@ -75,7 +75,7 @@ struct Drawer: View {
                         
                         Group() {
                             
-                            Text("Yesterday")
+                            Text("2 days ago")
                                 .fontWeight(.semibold)
                                 .foregroundColor(.gray)
                                 .font(.system(size: 15))
@@ -90,7 +90,7 @@ struct Drawer: View {
                         
                         Group() {
                             
-                            Text("Yesterday")
+                            Text("3 days ago")
                                 .fontWeight(.semibold)
                                 .foregroundColor(.gray)
                                 .font(.system(size: 15))
@@ -104,7 +104,7 @@ struct Drawer: View {
                         
                         Group() {
                             
-                            Text("Yesterday")
+                            Text("4 days ago")
                                 .fontWeight(.semibold)
                                 .foregroundColor(.gray)
                                 .font(.system(size: 15))
@@ -117,7 +117,7 @@ struct Drawer: View {
                         
                         Group() {
                             
-                            Text("Yesterday")
+                            Text("Last week")
                                 .fontWeight(.semibold)
                                 .foregroundColor(.gray)
                                 .font(.system(size: 15))

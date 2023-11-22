@@ -87,8 +87,6 @@ struct ContentView: View {
         let hapticFeedback = UINotificationFeedbackGenerator()
         let dragDistance = drag.translation.width
         
-        
-        
         hapticFeedback.notificationOccurred(.success)
         
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)

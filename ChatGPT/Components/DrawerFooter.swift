@@ -17,15 +17,19 @@ struct DrawerFooter: View {
                     .scaledToFit()
                     .frame(width: 40, height: 40)
                     .cornerRadius(9)
+                    .accessibilityLabel("User Icon Image")
                     
                 Text("Pablo Navarro")
                     .fontWeight(/*@START_MENU_TOKEN@*/.bold/*@END_MENU_TOKEN@*/)
                     .foregroundColor(.white)
+                    .accessibilityLabel("Pablo Navarro")
             }
             
             Spacer()
             
-            Image(systemName: "ellipsis").foregroundColor(.white)
+            Image(systemName: "ellipsis")
+                .foregroundColor(.white)
+                .accessibilityLabel("3 dot icon")
         }
         .padding(.vertical)
        
