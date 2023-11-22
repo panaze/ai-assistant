@@ -54,7 +54,7 @@ struct Drawer: View {
 
 
                         }
-                        
+                        .accessibilityElement(children: .combine)
                         
                         Divider().background(Color.gray)
                         
@@ -69,6 +69,7 @@ struct Drawer: View {
                             ArticleItem(title: "Using Swift Package Manager")
                             ArticleItem(title: "SwiftUI on macOS")
                         }
+                        .accessibilityElement(children: .combine)
                         
                         Divider().background(Color.gray)
                         
@@ -83,6 +84,7 @@ struct Drawer: View {
                             ArticleItem(title: "Debugging in Swift")
                             ArticleItem(title: "Apple's App Store: Success Strategies")
                         }
+                        .accessibilityElement(children: .combine)
                         
                         Divider().background(Color.gray)
                         
@@ -96,6 +98,7 @@ struct Drawer: View {
                             ArticleItem(title: "The Impact of Apple's Environmental Policies")
                             ArticleItem(title: "Apple Music API: Creating Music Apps")
                         }
+                        .accessibilityElement(children: .combine)
                         
                         Divider().background(Color.gray)
                         
@@ -108,6 +111,7 @@ struct Drawer: View {
                                 .accessibility(addTraits: .isHeader)
                             ArticleItem(title: "Leveraging Apple's Core ML for AI")
                         }
+                        .accessibilityElement(children: .combine)
                         
                         Divider().background(Color.gray)
                         
@@ -121,6 +125,7 @@ struct Drawer: View {
                             ArticleItem(title: "Privacy Features in Apple's iOS")
                             ArticleItem(title: "Using Apple's HealthKit for Fitness Apps")
                         }
+                        .accessibilityElement(children: .combine)
                         
                     }.padding(.top, 15)
                 }
@@ -149,13 +154,13 @@ struct DrawerItem: View {
                 .scaledToFit()
                 .frame(width: 30, height: 30)
                 .cornerRadius(60)
+                .accessibilityLabel("Icon representing \(title)")
             
             Text(title)
                 .fontWeight(.medium)
                 .foregroundColor(.white)
+                .accessibilityLabel("\(title)")
         }
-        .accessibilityElement(children: .combine) // Combine image and text for a single voice-over announcement
-        .accessibilityLabel("\(title)")
     }
 }
 
